@@ -3,6 +3,11 @@
 Use this loop for a complete hook, material adaptation, or request with several dependent surfaces.
 Ordinary focused edits can use `inspect → implement → check` directly.
 
+For a multi-step build, keep one ignored `.workflow/ledger.md` with only the parent-gate status,
+verified evidence, open assumptions, accepted or rejected outputs, current frontier, blockers, and
+next verifier. Update it after material observations so another session resumes from verified state.
+Do not turn the ledger into a second specification or narrative diary.
+
 ## Contract
 
 Inspect the repository first, then write one compact `SPEC.md` containing only:

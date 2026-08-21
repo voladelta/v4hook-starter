@@ -30,3 +30,6 @@ deployments/*.local.json
 
 # v4hook plans and evidence
 .v4hook/
+
+# Resumable agent state; product requirements stay in tracked SPEC.md
+.workflow/
