@@ -16,6 +16,9 @@ Use the inherited external callbacks from the pinned BaseHook. Implement interna
 `_after*` methods; retain its PoolManager-only check. Callback `sender` is the immediate router or
 locker, not automatically the end user.
 
+Design is frozen when every supported value flow has a named payer, recipient, settlement path,
+delta owner, and recovery policy, and the hook enables only the callbacks those flows require.
+
 ## Pinned source anchors
 
 - `vendor/v4-periphery/src/utils/BaseHook.sol`
@@ -52,6 +55,9 @@ the current call; a router's pre-existing or forced native balance belongs to ne
 its integration test proves all four quadrants, spoof rejection, partial-fill rollback and forced
 native isolation through the real PoolManager.
 
+Swap accounting is complete when an independent test oracle proves all four supported rows against
+observed deltas, balances, liabilities, remainders, and rollback behavior.
+
 ## Deployment footprint
 
 Run `forge build --sizes` after the first compiling vertical slice. A runtime factory or router that
@@ -62,3 +68,6 @@ changing this boundary.
 
 Callback, launch or lifecycle work that grows with participants or storage must also pass the
 maximum-transaction gate in `docs/gas.md`; contract size alone does not establish executability.
+
+Deployment proof is complete when the hook and every long-lived launcher fit their applicable size
+limits and the exact launch path proves atomic rollback.

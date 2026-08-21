@@ -6,8 +6,9 @@ correct vertical slice, before building downstream scripts, scenarios or UI arou
 
 ## Declare the budget
 
-Record the target chain and maximum transaction gas budget in `SPEC.md`. When the target is
-unspecified, use Ethereum's [EIP-7825 transaction cap](https://eips.ethereum.org/EIPS/eip-7825) of
+Record the target chain and maximum transaction gas budget in the active product contract
+(`SPEC.md` when the workflow creates one). When the target is unspecified, use Ethereum's
+[EIP-7825 transaction cap](https://eips.ethereum.org/EIPS/eip-7825) of
 `16,777,216` gas and a product budget of `12,000,000` gas. The product budget is deliberate
 headroom for estimation differences, composition and future changes; it is not a protocol
 constant. Other chains require an evidenced chain-specific cap.

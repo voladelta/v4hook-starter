@@ -22,3 +22,7 @@ the hook liability.
 when the product requires permissionless minting, capped issuance, signatures or hook-only minting.
 
 Pinned bases live under `vendor/openzeppelin-contracts/contracts/token/`.
+
+The companion surface is complete when supply, authority, metadata, transfer, burn, claim, and
+recovery behavior are either proved through the product path or explicitly out of scope, and unused
+seed contracts and tests are removed.

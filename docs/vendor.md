@@ -1,8 +1,14 @@
-# Pinned dependency map
+# Pinned dependency lane
 
-Treat `vendor/` as read-only implementation source, not a browsing task. Start from an owned import,
-follow the exact symbol into one tree, and stop when the relevant contract is understood. Exact
-upstream repositories and revisions live in `vendor.lock.json`.
+Read this document when an owned import leads into `vendor/`, provenance must be checked, or a task
+explicitly requires a dependency update. Exact upstream repositories and immutable revisions live
+in `vendor.lock.json`.
+
+## Search boundary
+
+Treat `vendor/` as read-only implementation source. Start from the owned import, search its tree for
+the exact symbol, read the minimum closure needed to establish behavior, and stop there. Enter
+Permit2 or Solmate only by following an exact transitive import.
 
 | Tree | What it owns | Useful entry points | Why it is present |
 | --- | --- | --- | --- |
@@ -18,9 +24,16 @@ upstream repositories and revisions live in `vendor.lock.json`.
 Its Solidity sources expose the real pinned PoolManager/PositionManager fixture. Files under
 `test/utils/v4hook-testkit/artifacts/` contain deployment bytecode and are not source-reading targets.
 
+Source inspection is complete when the owned import, defining symbol, and relevant pinned behavior
+are identified without widening into unrelated vendor trees.
+
 ## Updating a dependency
 
-Update only when the task requires it. Record the upstream repository and immutable revision in
-`vendor.lock.json`; update any tree-specific provenance file; inspect the diff for unexpected files;
-then rerun formatting, build, real PoolManager integration tests and the full check. Never mix
-independent dependency upgrades into a hook feature change.
+Update only when the task requires it. Change the dependency, `vendor.lock.json`, tree-specific
+provenance, affected imports, and proofs as one reviewed slice. Inspect the vendored diff for
+unexpected files, then run formatting, build, real PoolManager integration tests, and the full gate.
+Keep independent upgrades in separate changes.
+
+An update is complete when provenance names an immutable revision, every consumer compiles against
+the new tree, real-boundary behavior is green, and the diff contains only the intended dependency
+closure.

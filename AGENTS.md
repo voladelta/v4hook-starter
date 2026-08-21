@@ -1,104 +1,93 @@
-# Agent instructions
+# Agent guide
 
-Build the requested hook as a complete vertical product: contracts, real PoolManager proof,
-deployment scripts, devnet scenario, and dapp boundary. Keep the common path small and delete seed
-components the product does not use.
+Deliver the requested hook as a vertical product through every surface it needs: contracts, real
+PoolManager proof, deployment, devnet interaction, and dapp integration. Remove unused seed
+components so the finished repository describes one product.
 
-## Load guidance in execution order
+## Choose the workflow
 
-For a multi-step product build, read the installed `workflow-convergence` skill first. Let it decide
-whether the user request needs a compact `task-contracts` parent contract; do not create a second
-contract when the request is already checkable. Apply `implement-repo-changes` afterward as generic
-production-path hygiene, subordinate to this file and the project contract.
+- **Focused edit:** inspect the owning surface, make the smallest coherent change, and run its
+  nearest proof.
+- **Multi-surface build:** read the installed `workflow-convergence` skill, then
+  `docs/workflow.md`. Let that skill decide whether the request needs one compact `task-contracts`
+  contract; an already-checkable request does not need another specification.
+- **Repository change:** apply `implement-repo-changes` as production-path hygiene, subordinate to
+  this guide and any task contract.
+- **Fresh review:** after focused implementation is green, use `maintaining-llm-prs` for a
+  read-only review. Keep review, bounded repair, and independent verification distinct.
 
-Do not load review guidance before a candidate exists. Use `maintaining-llm-prs` only for the fresh
-read-only review stage after focused implementation is green. This repository is standalone: do not
-load or invoke the legacy `v4hook-cli` skill or CLI.
+This repository is standalone. Use its source and scripts directly; the legacy `v4hook-cli` is not
+part of this workflow.
 
-## Start here
+## Route the task
 
-Read `README.md`, `foundry.toml`, `remappings.txt`, and the smallest owned surface that answers the
-request. Search the owning pinned dependency path for an exact symbol before widening inspection.
-Treat `out/`, `cache/`, `broadcast/`, `.devnet/`, and `reports/` as generated evidence.
+Read `README.md`, then open only the smallest owned surface that can answer the request. Read
+`foundry.toml` for Solidity build or test behavior and `remappings.txt` when tracing an import.
+Generated evidence lives in `out/`, `cache/`, `broadcast/`, `.devnet/`, and `reports/`; treat it as
+output rather than source.
 
-| Need | Start here | Then read |
+| Trigger | Read first | Disclose next |
 | --- | --- | --- |
-| Hook callbacks, permissions, deltas | `src/StarterHook.sol`, pinned BaseHook and `IHooks` | `docs/hook.md`, `docs/security.md` |
-| Authenticated native/token swaps | `src/router/AuthenticatedNativeTokenRouter.sol` | its real-PoolManager integration test, then `docs/hook.md` |
-| ERC-20 or NFT companion | `src/tokens/`, pinned OpenZeppelin base | `docs/tokens.md` |
-| Real PoolManager tests or stateful handlers | `test/integration/`, `test/utils/v4hook-testkit/` | `docs/testing.md`, `test/utils/InvariantActionAccounting.sol` |
-| Loops, batches, cohorts or storage-heavy calls | the affected public method and its maximum bound | `docs/gas.md`, then Foundry gas tracking |
-| Chainlink randomness | `src/vrf/`, pinned Chainlink closure | `docs/vrf.md` |
-| Browser or Viem client | `ui/`, `deployments/` | `docs/dapp.md` |
-| One hundred local traders | `scripts/devnet-*`, `scenarios/` | `docs/devnet.md` |
-| Testnet preparation or deployment | `script/`, `scripts/testnet-*` | `docs/testnet.md` |
-| Pinned dependency source or provenance | the owned import, `remappings.txt` | `docs/vendor.md`, `vendor.lock.json` |
-| Foundry behavior, flags or failures | installed `forge --version` and exact `--help` | `references/foundry/README.md`, then one routed snapshot |
-| Multi-step autonomous delivery | current Git state and focused failures | `docs/workflow.md` |
+| Hook callbacks, permissions, or deltas | `src/StarterHook.sol` and its exact pinned imports | `docs/hook.md`, then `docs/security.md` |
+| Authenticated native/token swaps | `src/router/AuthenticatedNativeTokenRouter.sol` and its integration test | `docs/hook.md` |
+| ERC-20 or NFT companion | `src/tokens/` and the exact OpenZeppelin base | `docs/tokens.md` |
+| PoolManager, fuzz, or invariant proof | `test/integration/` or the affected test | `docs/testing.md` |
+| Loops, batches, cohorts, or storage growth | the public entry point and its maximum bound | `docs/gas.md` |
+| Chainlink randomness | `src/vrf/` and the exact pinned Chainlink base | `docs/vrf.md` |
+| Browser or Viem behavior | `ui/` and `deployments/` | `docs/dapp.md` |
+| One hundred local traders | `scenarios/` and `scripts/devnet-*` | `docs/devnet.md` |
+| Testnet preparation or deployment | `script/` and `scripts/testnet-*` | `docs/testnet.md` |
+| Dependency source, provenance, or upgrade | the owned import and `remappings.txt` | `docs/vendor.md` |
+| Foundry flags, failures, or configuration | installed `forge --version` and exact `--help` | `references/foundry/README.md` |
 
-The pinned dependency map is:
+Search a pinned dependency only from a known owned import and exact symbol. `vendor/` is read-only;
+`docs/vendor.md` owns its map and upgrade procedure. Testkit artifact files are opaque bytecode, not
+source-reading targets.
 
-- PoolManager interfaces, callbacks, types and libraries: `vendor/v4-core/src/`
-- BaseHook, routers, PositionManager and HookMiner: `vendor/v4-periphery/src/`
-- token and security bases: `vendor/openzeppelin-contracts/contracts/`
-- direct-funded VRF base and interface: `vendor/chainlink-evm/`
-- test/script utilities: `vendor/forge-std/src/`
-- Permit2 and Solmate: transitive v4 dependencies; enter only from an exact import
-- local v4 fixtures: `test/utils/v4hook-testkit/`
+## Preserve product invariants
 
-`vendor/` is read-only. Update one dependency, its provenance, imports and tests as one reviewed
-change. Search vendor only through a known owned import; the testkit artifact files contain opaque
-bytecode and are not source-reading targets. See `docs/vendor.md` before widening a dependency
-search.
+- Use inherited PoolManager-only callback entry points and enable only callbacks the product uses.
+- Bind payer, recipient, or beneficiary identity at an authenticated settlement boundary; callback
+  `sender` alone is not user identity.
+- Reconcile every return delta, token movement, claim, remainder, and liability through the real
+  PoolManager path.
+- Keep contract interfaces, deployment scripts, manifests, scenarios, and UI consumers synchronized.
+- Gate any user-callable work that grows with inputs or storage through `docs/gas.md` before
+  expanding downstream surfaces.
 
-## Work to completion
+The routed document owns branch-specific requirements for swaps, tokens, VRF, tests, devnet, and
+testnet. Apply every requirement on each branch the product includes.
 
-For a complete implementation, follow `docs/workflow.md`. Turn the request into one compact,
-checkable specification, implement one production slice at a time, and keep the nearest behavioral
-proof green. When subagents are available, use fresh read-only review, bounded repair, and
-independent verification; the primary agent retains the completion decision.
+## Prove the result
 
-Every implementation must:
-
-- use inherited PoolManager-only callback entry points and minimal hook permissions;
-- bind user or beneficiary identity at an authenticated settlement boundary rather than callback
-  `sender` assumptions;
-- reconcile every return delta, token movement, claim and liability;
-- test exact-input and exact-output in both directions when swaps are supported;
-- test rollback and hostile paths through the real pinned PoolManager;
-- keep companion token/NFT authority, supply and recovery policy explicit;
-- keep VRF requests outside PoolManager callbacks and callbacks limited to terminal storage;
-- complete the gas-feasibility gate before expanding a user-callable path whose work grows with
-  entries or storage writes;
-- replace `scenarios/trade.ts` with the real intended router path before claiming devnet completion;
-- update `deployments/*.json` consumers whenever deployment addresses or ABIs change.
-
-Run the narrowest focused proof first. Finish local work with:
+Run the narrowest behavioral proof first. After it passes, run:
 
 ```sh
 ./scripts/check.sh
 ```
 
-The full gate is green only when the command exits zero and prints `CHECK_OK` after every enabled
-stage. Do not infer later-stage success from earlier tool output.
+The full gate requires exit code zero and a final `CHECK_OK` after every enabled stage. Use Bun for
+the TypeScript workspace. `SKIP_APP=1 ./scripts/check.sh` is valid only when the task explicitly
+excludes the dapp and scenario layer.
 
-Use Bun for the TypeScript workspace (`bun install --frozen-lockfile`, `bun run ...`). Run
-`SKIP_APP=1 ./scripts/check.sh` only when the task explicitly excludes the dapp and scenario layer.
+A complete interactive product also requires `./scripts/devnet-check.sh`, its final `DEVNET_OK`, a
+checked report, and cleanup. Replace the seed `scenarios/trade.ts` with the intended router path
+before treating devnet output as product evidence.
 
-For a complete product path, also run `./scripts/devnet-check.sh` and require its `DEVNET_OK`
-sentinel. Testnet work stops
-after the fork dry-run unless the user explicitly authorizes broadcast for the named network.
+Testnet work stops after the fork dry-run unless the user explicitly authorizes broadcast to the
+named network.
 
 ## Authority
 
-Local source edits, tests, generated local manifests and disposable localhost processes are in
-scope for build requests. Signing, wallet access, paid services, testnet/mainnet broadcast,
-verification publication, dependency installation, and external repository writes require explicit
-user authority. Never read or print secrets; user-run broadcast commands may reference an existing
-Foundry keystore account by name.
+Build requests authorize local source edits, tests, generated local manifests, and disposable
+localhost processes. Signing, wallet access, paid services, public-network broadcast, verification
+publication, dependency installation, and external repository writes require explicit user
+authority. Keep secrets out of commands, output, files, and prompts; a user-run broadcast may name
+an existing Foundry keystore account.
 
 ## Completion
 
-Complete means the requested behavior exists through its production path, relevant focused and full
-checks pass, seed references are removed or classified, devnet evidence exists when the product
-includes interaction, and remaining external actions are reported without being performed.
+Complete means the requested behavior exists through its production path, every applicable routed
+requirement is satisfied, focused and full gates are green, unused seed references are removed or
+classified, interactive products have devnet evidence, and remaining external actions are reported
+without being performed.

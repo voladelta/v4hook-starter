@@ -19,3 +19,8 @@ The dapp consumes one generated deployment manifest rather than duplicating addr
 `ui/` is deliberately small: wallet connection, manifest loading and status display. The product
 agent adds hook-specific reads and actions after contract interfaces stabilize. Keep private keys
 out of the browser and repository.
+
+The dapp boundary is complete when every supported write uses its production entry point, routed
+swaps use the intended router, simulation and wallet chain checks precede approval, receipt status
+and product postconditions determine success, and no address or pool parameter is duplicated outside
+the manifest.

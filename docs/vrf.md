@@ -26,3 +26,7 @@ the consumer through the vendored base's authenticated `rawFulfillRandomWords` p
 Network wrapper addresses, supported confirmations and current pricing are deployment inputs. Verify
 them against official Chainlink sources only when preparing the named network; they are not local
 implementation research.
+
+The randomness branch is complete when every outcome-affecting input is frozen before request,
+authenticated fulfillment can only record one terminal result, delayed settlement proves its own
+custody rules, and recovery cannot be reopened by a late callback.

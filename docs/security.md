@@ -1,6 +1,7 @@
 # Security invariants
 
-Use these invariants to shape code and tests, not as an audit claim.
+Apply every invariant on each product branch the task includes. These rules shape code and proof;
+they are engineering requirements, not an audit claim.
 
 ## Callback boundary
 
@@ -32,5 +33,8 @@ Use these invariants to shape code and tests, not as an audit claim.
 Test the real PoolManager path, direct callback rejection, all supported swap quadrants, permission
 bits, claims/custody conservation, token/NFT authority, malformed input, stale state and rollback.
 Fuzz arithmetic boundaries and use stateful invariants for conservation and action accounting.
-Treat static-analysis output and exit status separately: annotations are local proof obligations,
-not broad allowlists, and a gate is green only when its command exits zero.
+Use `docs/testing.md` for proof ownership and gate criteria. Treat static-analysis annotations as
+local proof obligations rather than broad allowlists.
+
+Security proof is complete when every applicable invariant above has a real-boundary assertion and
+every excluded branch has a documented boundary showing why the product cannot enter it.

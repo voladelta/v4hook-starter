@@ -1,37 +1,43 @@
 # Local devnet and 100 traders
 
-The devnet is disposable localhost evidence, not a simulated mainnet claim.
+Use the devnet as disposable localhost evidence for an interactive product, not as a simulated
+mainnet claim.
+
+## Own the production path
+
+The product owns `script/DevnetDeploy.s.sol`, which writes `.devnet/deployment.json`,
+`scenarios/trade.ts`, which prepares the hook-specific router call, and `scenarios/verify.ts`, which
+checks aggregate product postconditions after receipts. `scenarios/run.ts` owns account derivation,
+concurrency, receipts, verifier invocation, and reporting. Replace the seed trade adapter and add the
+verifier before claiming interaction evidence.
+
+The deploy wrapper copies the manifest to the ignored `ui/public/deployment.json`; shutdown removes
+that copy. `devnet-up.sh` uses 100 disposable accounts derived from a public test mnemonic. These
+accounts are localhost-only and must never hold public-network funds.
+
+The runner preflights every call with `eth_call`, then submits with an explicit gas limit so
+concurrent estimation cannot race changing pool state. The default is `1,000,000` gas. Override it
+with `TRADER_GAS_LIMIT` or a prepared trade's `gas` only when the production action has an evidenced
+bound.
+
+The scenario path is ready when deployment, trade, and verifier surfaces use the final contract
+interfaces, every prepared transaction targets the intended router, and the report includes the
+verifier's product-specific postconditions.
+
+## Run and diagnose
+
+Use individual scripts while developing one stage. Before completion, run the owned lifecycle:
 
 ```sh
 bun install --frozen-lockfile
 ./scripts/devnet-check.sh
 ```
 
-`devnet-check.sh` runs the complete lifecycle with cleanup traps and prints `DEVNET_OK` only after
-deployment, the scenario and shutdown all succeed. It binds a unique ownership token before
-startup, so signals and readiness failures stop only the Anvil process it created. The full check
-also exercises those two cleanup paths. Use the individual commands when developing one stage;
-always run the wrapper before completion.
+The wrapper binds its Anvil process with a unique ownership token and cleanup traps. A failed
+scenario transaction or report must preserve the stage, selector, value, gas limit, transaction
+hash, gas used, and post-receipt replay error when available in `reports/`.
 
-`devnet-up.sh` starts Anvil with 100 funded accounts derived from a public test mnemonic and records
-its PID under `.devnet/`. Never fund or reuse these accounts on a public network.
-
-The product implementation owns `script/DevnetDeploy.s.sol` and writes `.devnet/deployment.json`.
-The deploy wrapper copies that manifest to the ignored `ui/public/deployment.json`; shutdown removes
-the UI copy so verification leaves the tracked tree unchanged.
-`scenarios/run.ts` handles account derivation, concurrency, receipts and reporting;
-`scenarios/trade.ts` owns the hook-specific router call. Replace the seed adapter before claiming
-interaction evidence.
-
-The runner preflights every prepared call with `eth_call`, then submits with an explicit gas limit
-instead of concurrently estimating against changing pool state. The default is `1,000,000` gas;
-override it with `TRADER_GAS_LIMIT` or set `gas` on a prepared trade when the production action has
-an evidenced bound. A failure report records its stage, selector, value, gas limit, transaction hash,
-gas used and post-receipt replay error when available.
-
-The scenario is green only when all intended transactions are mined successfully and the report
-checks product postconditions such as balances, liabilities, winners or NFTs. Preserve failed
-transaction hashes and causes in `reports/`.
-
-Completion requires `DEVNET_OK`, a checked report, no listener on the configured port and a clean
-tracked tree. Preserve `.devnet/deployment.json` and `reports/` as ignored evidence.
+The lifecycle is complete only when all intended transactions mine successfully, the checked report
+proves product postconditions, `DEVNET_OK` is printed after shutdown, no listener owned by the
+lifecycle remains, and the tracked tree is clean. Preserve `.devnet/deployment.json` and `reports/`
+as ignored evidence.
