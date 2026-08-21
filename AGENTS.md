@@ -4,6 +4,17 @@ Build the requested hook as a complete vertical product: contracts, real PoolMan
 deployment scripts, devnet scenario, and dapp boundary. Keep the common path small and delete seed
 components the product does not use.
 
+## Load guidance in execution order
+
+For a multi-step product build, read the installed `workflow-convergence` skill first. Let it decide
+whether the user request needs a compact `task-contracts` parent contract; do not create a second
+contract when the request is already checkable. Apply `implement-repo-changes` afterward as generic
+production-path hygiene, subordinate to this file and the project contract.
+
+Do not load review guidance before a candidate exists. Use `maintaining-llm-prs` only for the fresh
+read-only review stage after focused implementation is green. This repository is standalone: do not
+load or invoke the legacy `v4hook-cli` skill or CLI.
+
 ## Start here
 
 Read `README.md`, `foundry.toml`, `remappings.txt`, and the smallest owned surface that answers the
