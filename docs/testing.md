@@ -1,7 +1,7 @@
 # Behavioral proof
 
-Test through the same boundary production uses. A mock, duplicate helper, or assertion that reuses
-production math cannot prove the owning path.
+Test through the same boundary the real consumer uses. A mock, duplicate helper, or assertion that
+reuses production math cannot prove the requested artifact.
 
 ## Place the proof
 
@@ -14,8 +14,11 @@ production math cannot prove the owning path.
 `test/utils/v4hook-testkit/` deploys the real pinned v4 bytecode locally. Read `PROVENANCE.md` before
 changing the fixture, and treat files under its `artifacts/` directory as opaque bytecode.
 
-Proof placement is complete when each material invariant is asserted at the narrowest boundary that
-can fail if the production owner is bypassed or wrong.
+Prove causality for each requested production behavior: make a reversible perturbation to its
+implementation in the requested artifact while preserving the consumer-facing interface. Run the
+focused proof through the real consumer; it must go red on the expected behavioral assertion, then
+green after the original implementation is restored. If it stays green, trace the consumer path and
+repair the proof or remove the bypass before completion.
 
 ## Prove swap accounting
 

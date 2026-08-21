@@ -75,6 +75,7 @@ an existing Foundry keystore account.
 
 ## Completion
 
-Complete means the requested behavior exists through its production path, every applicable routed
-requirement and gate is satisfied, unused seed references are removed or classified, interactive
-products have devnet evidence, and remaining external actions are reported without being performed.
+Complete means the requested artifact owns the required behavior, the real consumer uses that
+artifact, and focused proof is causally dependent on it. Every applicable routed requirement and
+gate is satisfied, unused seed references are removed or classified, interactive products have
+devnet evidence, and remaining external actions are reported without being performed.
