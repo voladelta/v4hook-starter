@@ -20,10 +20,10 @@ import {Counter} from "../src/Counter.sol";
 contract DeployScript is Script {
     function run() public {
         vm.startBroadcast();
-        
+
         Counter counter = new Counter();
         counter.setNumber(42);
-        
+
         vm.stopBroadcast();
     }
 }

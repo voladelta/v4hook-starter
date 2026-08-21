@@ -19,6 +19,10 @@ fetch() {
         echo "empty Foundry reference: $route" >&2
         exit 1
     }
+    if [ "${output##*.}" = "md" ]; then
+        sed -E 's/[[:blank:]]+$//' "$stage/$output" >"$stage/$output.normalized"
+        mv -- "$stage/$output.normalized" "$stage/$output"
+    fi
 }
 
 fetch "llms.txt" "llms.txt"

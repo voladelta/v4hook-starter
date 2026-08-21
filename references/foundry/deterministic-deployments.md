@@ -156,7 +156,7 @@ contract DeployCreate2 is Script {
 
     function run() public {
         bytes memory initCode = type(Counter).creationCode;
-        
+
         // Compute and verify expected address
         address expected = CREATEX.computeCreate2Address(SALT, keccak256(initCode));
         console.log("Expected address:", expected);

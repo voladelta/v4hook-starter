@@ -465,7 +465,7 @@ Use `vm.expectEmit(){:solidity}` to verify events are emitted:
 function test_EmitsTransfer() public {
     vm.expectEmit(true, true, false, true);
     emit Transfer(alice, bob, 100);
-    
+
     token.transfer(bob, 100);
 }
 ```

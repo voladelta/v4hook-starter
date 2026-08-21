@@ -23,6 +23,7 @@ The snapshots were retrieved from the official [Foundry documentation](https://g
 `eecd45cffa432b72bd1793e7b13ca15d51a4ebaa600d98da62b977862cceb3af`. The local verification
 version at capture time was Foundry 1.7.1, commit
 `4072e48705af9d93e3c0f6e29e93b5e9a40caed8`.
+Markdown snapshots are normalized only by removing trailing horizontal whitespace.
 
 Documentation can move ahead of an installed release. Confirm exact flags, defaults and behavior
 with the installed command's `--help` and the pinned source used by the project. Refresh deliberately
