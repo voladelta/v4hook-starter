@@ -1,8 +1,9 @@
 # Viem dapp integration
 
 The dapp consumes one generated deployment manifest rather than duplicating addresses in source.
-`ui/public/deployment.json` is the local schema example; `deployments/sepolia.example.json` shows
-the testnet inputs. Deployment copies the resulting public manifest into `ui/public/`.
+`ui/public/deployment.example.json` documents the browser schema;
+`deployments/sepolia.example.json` shows testnet inputs. Deployment writes the ignored
+`ui/public/deployment.json`, and devnet shutdown removes it so verification remains clean.
 
 ## Boundary
 

@@ -27,3 +27,35 @@ locker, not automatically the end user.
 
 Read only the symbols used by the chosen design. The pinned code is the implementation authority;
 external documentation is for a specifically missing current network fact, not startup research.
+
+## Native/token swap map
+
+For a canonical pool with native currency as `currency0` and the companion token as `currency1`,
+freeze this matrix before implementing fee deltas:
+
+| User operation | `zeroForOne` | `amountSpecified` | Native lane |
+| --- | --- | --- | --- |
+| Buy, exact input | `true` | negative | specified |
+| Buy, exact output | `true` | positive | unspecified |
+| Sell, exact input | `false` | negative | unspecified |
+| Sell, exact output | `false` | positive | specified |
+
+Positive hook deltas mean the hook takes currency; PoolManager subtracts them from the router's
+delta. Prove the four rows against observed deltas and balances rather than duplicating this table
+inside production math.
+
+The testkit's `PoolSwapTest` is a fixture, not a production identity boundary. A hook that attributes
+buyers or beneficiaries needs an authenticated router/settlement path that captures payer and
+recipient before unlock and takes output directly to the recipient. Refund only value supplied by
+the current call; a router's pre-existing or forced native balance belongs to neither caller.
+`src/router/AuthenticatedNativeTokenRouter.sol` is the replaceable single-pool seed for that boundary;
+its integration test proves all four quadrants, spoof rejection, partial-fill rollback and forced
+native isolation through the real PoolManager.
+
+## Deployment footprint
+
+Run `forge build --sizes` after the first compiling vertical slice. A runtime factory or router that
+references `type(Hook).creationCode` embeds that creation code and can exceed EIP-170 even when the
+hook itself fits. Keep large CREATE2 launch code in a constructor-only factory or a separate
+deployer, while the long-lived router remains small. Re-run the exact launch rollback proof after
+changing this boundary.

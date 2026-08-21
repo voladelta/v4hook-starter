@@ -24,13 +24,15 @@ Treat `out/`, `cache/`, `broadcast/`, `.devnet/`, and `reports/` as generated ev
 | Need | Start here | Then read |
 | --- | --- | --- |
 | Hook callbacks, permissions, deltas | `src/StarterHook.sol`, pinned BaseHook and `IHooks` | `docs/hook.md`, `docs/security.md` |
+| Authenticated native/token swaps | `src/router/AuthenticatedNativeTokenRouter.sol` | its real-PoolManager integration test, then `docs/hook.md` |
 | ERC-20 or NFT companion | `src/tokens/`, pinned OpenZeppelin base | `docs/tokens.md` |
-| Real PoolManager tests | `test/integration/`, `test/utils/v4hook-testkit/` | `docs/testing.md` |
+| Real PoolManager tests or stateful handlers | `test/integration/`, `test/utils/v4hook-testkit/` | `docs/testing.md`, `test/utils/InvariantActionAccounting.sol` |
 | Chainlink randomness | `src/vrf/`, pinned Chainlink closure | `docs/vrf.md` |
 | Browser or Viem client | `ui/`, `deployments/` | `docs/dapp.md` |
 | One hundred local traders | `scripts/devnet-*`, `scenarios/` | `docs/devnet.md` |
 | Testnet preparation or deployment | `script/`, `scripts/testnet-*` | `docs/testnet.md` |
 | Pinned dependency source or provenance | the owned import, `remappings.txt` | `docs/vendor.md`, `vendor.lock.json` |
+| Foundry behavior, flags or failures | installed `forge --version` and exact `--help` | `references/foundry/README.md`, then one routed snapshot |
 | Multi-step autonomous delivery | current Git state and focused failures | `docs/workflow.md` |
 
 The pinned dependency map is:
@@ -74,10 +76,14 @@ Run the narrowest focused proof first. Finish local work with:
 ./scripts/check.sh
 ```
 
+The full gate is green only when the command exits zero and prints `CHECK_OK` after every enabled
+stage. Do not infer later-stage success from earlier tool output.
+
 Use Bun for the TypeScript workspace (`bun install --frozen-lockfile`, `bun run ...`). Run
 `SKIP_APP=1 ./scripts/check.sh` only when the task explicitly excludes the dapp and scenario layer.
 
-For a complete product path, also run the devnet lifecycle from `docs/devnet.md`. Testnet work stops
+For a complete product path, also run `./scripts/devnet-check.sh` and require its `DEVNET_OK`
+sentinel. Testnet work stops
 after the fork dry-run unless the user explicitly authorizes broadcast for the named network.
 
 ## Authority

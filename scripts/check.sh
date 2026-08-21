@@ -10,12 +10,26 @@ command -v forge >/dev/null 2>&1 || {
     exit 1
 }
 
-forge fmt --check
-forge build --sizes
-forge test
+run_step() {
+    name=$1
+    shift
+    echo "==> $name"
+    if "$@"; then
+        echo "<== PASS: $name"
+        return 0
+    else
+        status=$?
+        echo "<== FAIL: $name (exit $status)" >&2
+        exit "$status"
+    fi
+}
+
+run_step "forge format" forge fmt --check
+run_step "forge build and sizes" forge build --sizes
+run_step "forge tests" forge test
 
 if command -v slither >/dev/null 2>&1; then
-    slither . --filter-paths 'vendor/' --fail-high
+    run_step "slither fail-high" slither . --filter-paths 'vendor/' --fail-high
 elif [ "${REQUIRE_SLITHER:-0}" = "1" ]; then
     echo "slither is required when REQUIRE_SLITHER=1" >&2
     exit 1
@@ -32,6 +46,8 @@ if [ "${SKIP_APP:-0}" != "1" ]; then
         echo "run bun install --frozen-lockfile before ./scripts/check.sh" >&2
         exit 1
     }
-    bun run typecheck
-    bun run ui:build
+    run_step "TypeScript typecheck" bun run typecheck
+    run_step "Vite production build" bun run ui:build
 fi
+
+echo "CHECK_OK"

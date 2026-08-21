@@ -15,6 +15,8 @@ Use these invariants to shape code and tests, not as an audit claim.
 - Router context is not user identity. Bind payer and recipient through the settlement path.
 - Pull claims use effects-first accounting and resist reentrancy.
 - Forced native currency is separated from user liabilities and cannot be refunded to a later caller.
+- Prefer the pinned OpenZeppelin reentrancy guard at native claim/refund boundaries; custom locks
+  need a stronger reason and explicit reentrant proof.
 - Rounding policy and carried remainders conserve value over repeated operations.
 - Admin, treasury, minter and deployer roles are immutable or explicitly governed and tested.
 
@@ -30,3 +32,5 @@ Use these invariants to shape code and tests, not as an audit claim.
 Test the real PoolManager path, direct callback rejection, all supported swap quadrants, permission
 bits, claims/custody conservation, token/NFT authority, malformed input, stale state and rollback.
 Fuzz arithmetic boundaries and use stateful invariants for conservation and action accounting.
+Treat static-analysis output and exit status separately: annotations are local proof obligations,
+not broad allowlists, and a gate is green only when its command exits zero.

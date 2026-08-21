@@ -19,6 +19,7 @@ out/
 # Node modules
 node_modules/
 ui/dist/
+ui/public/deployment.json
 bun.lockb
 
 # Disposable local evidence

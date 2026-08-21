@@ -4,6 +4,9 @@ set -eu
 
 root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 pid_file="$root/.devnet/anvil.pid"
+ui_manifest="$root/ui/public/deployment.json"
+
+rm -f -- "$ui_manifest"
 
 if [ ! -f "$pid_file" ]; then
     echo "devnet is not running"

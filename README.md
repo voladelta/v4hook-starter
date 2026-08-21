@@ -36,6 +36,7 @@ bun install --frozen-lockfile
 The baseline contains:
 
 - `src/StarterHook.sol`: replaceable minimal BaseHook example;
+- `src/router/AuthenticatedNativeTokenRouter.sol`: replaceable four-quadrant settlement and identity boundary;
 - `src/tokens/`: fixed-supply ERC-20 and immutable-minter ERC-721 seeds;
 - `src/vrf/`: VRF v2.5 native direct-funding lifecycle reference;
 - `test/integration/`: real pinned PoolManager and PositionManager behavior;
@@ -54,14 +55,12 @@ After the product agent implements `script/DevnetDeploy.s.sol` and `scenarios/tr
 
 ```sh
 bun install --frozen-lockfile
-./scripts/devnet-up.sh
-./scripts/devnet-deploy.sh
-bun run scenario:devnet
-./scripts/devnet-down.sh
+./scripts/devnet-check.sh
 ```
 
 The scenario derives 100 disposable Anvil accounts, sends the intended trades, waits for receipts
-and writes `reports/devnet.json`.
+and writes `reports/devnet.json`. The wrapper stops Anvil, removes the generated UI manifest and
+prints `DEVNET_OK` only after the entire lifecycle succeeds.
 
 ## Testnet
 
@@ -78,7 +77,11 @@ The starter vendors pinned v4-core, v4-periphery, Permit2, Solmate, OpenZeppelin
 Forge Std and the minimal Chainlink direct-funding closure. `vendor.lock.json` records exact sources
 and revisions; `docs/vendor.md` maps what each tree owns and where an agent should look first. Dapp
 dependencies are pinned by `bun.lock`, not Solidity vendor. Bun is the preferred JavaScript runtime;
-the check script retains an npm fallback for environments without Bun.
+the full check requires Bun unless the task explicitly excludes the app layer.
+
+Curated Foundry documentation for agents lives under `references/foundry/`. It includes the compact
+official route index and the small set of pages used by this starter; it is documentation, not a
+build dependency.
 
 This starter and its examples are unaudited. Passing local checks is necessary engineering evidence,
 not an audit or permission to deploy.

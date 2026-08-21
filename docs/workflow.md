@@ -55,8 +55,9 @@ interfaces. A child result is evidence, not parent completion.
 
 ## Gates
 
-Run `./scripts/check.sh` only after focused tests pass. A complete product also runs the devnet
-lifecycle when it contains router, wallet or UI behavior. Source changes after review require fresh
+Run `./scripts/check.sh` only after focused tests pass, and require both exit zero and its final
+`CHECK_OK` sentinel. A complete product with router, wallet or UI behavior also runs
+`./scripts/devnet-check.sh` and requires `DEVNET_OK`. Source changes after review require fresh
 review and verification.
 
 Classify the outcome:

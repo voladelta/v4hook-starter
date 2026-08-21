@@ -17,10 +17,18 @@ as opaque fixtures and read `PROVENANCE.md` before changing them.
 
 When the hook changes swaps, cover exact-input and exact-output for both directions. Assert executed
 PoolManager deltas, hook return deltas, payer/recipient balances, liabilities, remainders and full
-rollback. A nonzero fee assertion is not accounting proof.
+rollback. Compute expected fees, gross-up, splits and carried remainders in an independent test
+oracle; assertions that reuse production math or merely require a nonzero fee are not accounting
+proof. Include values between documented examples so premature integer flooring cannot hide.
 
 Stateful handlers count attempts, successes, exact expected failures and unexpected failures for
-each action class. Assert the relationships and require each material action class to execute.
+each action class. Include every supported exactness/direction mode and every material lifecycle
+transition. Assert `attempts == successes + expected failures + unexpected failures`, require each
+material class to succeed, and require unexpected failures to remain zero. Track forced funds with
+an independent ghost value when the invariant distinguishes liabilities from surplus.
+`test/utils/InvariantActionAccounting.sol` supplies this bookkeeping without choosing product
+actions or invariants for the implementation.
 
 Run a focused test during development, then `./scripts/check.sh`. A skipped required test or an empty
-filter is a failure.
+filter is a failure. Accept the full gate only when its process exits zero and prints `CHECK_OK`; a
+tool report followed by process termination is not evidence that later stages ran.
