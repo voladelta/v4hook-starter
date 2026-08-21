@@ -23,4 +23,5 @@ export interface PreparedTrade {
   to: Address;
   data: Hex;
   value?: bigint;
+  gas?: bigint;
 }
