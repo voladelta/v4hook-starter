@@ -27,6 +27,7 @@ run_step() {
 run_step "forge format" forge fmt --check
 run_step "forge build and sizes" forge build --sizes
 run_step "forge tests" forge test
+run_step "devnet startup cleanup" "$root/scripts/test-devnet-startup-cleanup.sh"
 
 if command -v slither >/dev/null 2>&1; then
     run_step "slither fail-high" slither . --filter-paths 'vendor/' --fail-high

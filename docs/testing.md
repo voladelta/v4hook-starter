@@ -27,7 +27,9 @@ transition. Assert `attempts == successes + expected failures + unexpected failu
 material class to succeed, and require unexpected failures to remain zero. Track forced funds with
 an independent ghost value when the invariant distinguishes liabilities from surplus.
 `test/utils/InvariantActionAccounting.sol` supplies this bookkeeping without choosing product
-actions or invariants for the implementation.
+actions or invariants for the implementation. Its expected-revert classifier requires a nonzero
+custom-error selector: empty or mismatched revert data is always unexpected. Never increment an
+expected-failure counter without classifying the observed production revert.
 
 Run a focused test during development, then `./scripts/check.sh`. A skipped required test or an empty
 filter is a failure. Accept the full gate only when its process exits zero and prints `CHECK_OK`; a

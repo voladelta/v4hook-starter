@@ -5,6 +5,8 @@ import {Test} from "forge-std/Test.sol";
 
 /// @notice Reusable accounting floor for production-path stateful handlers.
 abstract contract InvariantActionAccounting is Test {
+    error InvalidExpectedSelector();
+
     struct ActionCounts {
         uint256 attempts;
         uint256 successes;
@@ -22,11 +24,9 @@ abstract contract InvariantActionAccounting is Test {
         ++actionCounts[action].successes;
     }
 
-    function _recordExpectedRevert(bytes4 action) internal {
-        ++actionCounts[action].expectedReverts;
-    }
-
     function _classifyRevert(bytes4 action, bytes memory reason, bytes4 expectedSelector) internal {
+        if (expectedSelector == bytes4(0)) revert InvalidExpectedSelector();
+
         bytes4 actualSelector;
         if (reason.length >= 4) {
             assembly ("memory-safe") {

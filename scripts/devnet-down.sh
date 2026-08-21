@@ -3,8 +3,18 @@
 set -eu
 
 root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
-pid_file="$root/.devnet/anvil.pid"
-ui_manifest="$root/ui/public/deployment.json"
+state=${DEVNET_STATE_DIR:-"$root/.devnet"}
+pid_file="$state/anvil.pid"
+owner_file="$state/anvil.owner"
+ui_manifest=${DEVNET_UI_MANIFEST:-"$root/ui/public/deployment.json"}
+
+if [ -n "${DEVNET_OWNER_TOKEN:-}" ]; then
+    recorded_owner=$(sed -n '1p' "$owner_file" 2>/dev/null || true)
+    if [ "$recorded_owner" != "$DEVNET_OWNER_TOKEN" ]; then
+        echo "refusing to stop a devnet owned by another process" >&2
+        exit 1
+    fi
+fi
 
 rm -f -- "$ui_manifest"
 
@@ -34,5 +44,5 @@ while kill -0 "$pid" 2>/dev/null; do
     sleep 0.1
 done
 
-rm -f -- "$pid_file"
+rm -f -- "$pid_file" "$owner_file" "$state/config.env"
 echo "devnet stopped"

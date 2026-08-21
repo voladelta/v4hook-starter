@@ -5,6 +5,7 @@ import {Test} from "forge-std/Test.sol";
 import {MockERC20} from "solmate/src/test/utils/mocks/MockERC20.sol";
 import {BaseHook} from "@uniswap/v4-periphery/src/utils/BaseHook.sol";
 import {Hooks} from "@uniswap/v4-core/src/libraries/Hooks.sol";
+import {CustomRevert} from "@uniswap/v4-core/src/libraries/CustomRevert.sol";
 import {IHooks} from "@uniswap/v4-core/src/interfaces/IHooks.sol";
 import {IPoolManager, SwapParams} from "@uniswap/v4-core/src/interfaces/IPoolManager.sol";
 import {BeforeSwapDelta, BeforeSwapDeltaLibrary} from "@uniswap/v4-core/src/types/BeforeSwapDelta.sol";
@@ -113,41 +114,62 @@ contract AuthenticatedNativeTokenRouterTest is BaseTest {
     function test_realPoolManagerAllFourQuadrantsBindPayerAndRecipient() public {
         bytes memory productData = abi.encode("product-context");
         vm.deal(alice, 5 ether);
+        uint256 bobBuyBalance;
 
-        vm.prank(alice);
-        (uint256 exactInputBuyIn, uint256 exactInputBuyOut) =
-            router.swapExactInput{value: 1 ether}(true, 1 ether, 1, bob, TickMath.MIN_SQRT_PRICE + 1, productData);
-        assertEq(exactInputBuyIn, 1 ether);
-        assertEq(token.balanceOf(bob), exactInputBuyOut);
+        {
+            vm.prank(alice);
+            (uint256 exactInputBuyIn, uint256 exactInputBuyOut) =
+                router.swapExactInput{value: 1 ether}(true, 1 ether, 1, bob, TickMath.MIN_SQRT_PRICE + 1, productData);
+            assertEq(exactInputBuyIn, 1 ether);
+            assertEq(token.balanceOf(bob), exactInputBuyOut);
+            _assertLastRoute(alice, bob, productData, 1);
+            bobBuyBalance = exactInputBuyOut;
+        }
 
-        uint256 aliceNativeBefore = alice.balance;
-        vm.prank(alice);
-        uint256 exactOutputBuyIn = router.swapExactOutput{value: 1 ether}(
-            true, 0.1 ether, 1 ether, alice, TickMath.MIN_SQRT_PRICE + 1, productData
-        );
-        assertEq(token.balanceOf(alice), 0.1 ether);
-        assertEq(aliceNativeBefore - alice.balance, exactOutputBuyIn);
+        {
+            uint256 aliceNativeBefore = alice.balance;
+            vm.prank(alice);
+            uint256 exactOutputBuyIn = router.swapExactOutput{value: 1 ether}(
+                true, 0.1 ether, 1 ether, alice, TickMath.MIN_SQRT_PRICE + 1, productData
+            );
+            assertEq(token.balanceOf(alice), 0.1 ether);
+            assertEq(aliceNativeBefore - alice.balance, exactOutputBuyIn);
+            _assertLastRoute(alice, alice, productData, 2);
+        }
 
-        vm.prank(alice);
-        token.approve(address(router), type(uint256).max);
         vm.prank(bob);
-        token.approve(address(router), type(uint256).max);
-
+        token.approve(address(router), bobBuyBalance / 10);
+        {
+            uint256 bobTokenBefore = token.balanceOf(bob);
+            uint256 aliceNativeBeforeSell = alice.balance;
+            vm.prank(bob);
+            (uint256 exactInputSellIn, uint256 exactInputSellOut) = router.swapExactInput(
+                false, uint128(bobBuyBalance / 10), 1, alice, TickMath.MAX_SQRT_PRICE - 1, productData
+            );
+            assertEq(exactInputSellIn, bobBuyBalance / 10);
+            assertGt(exactInputSellOut, 0);
+            assertEq(bobTokenBefore - token.balanceOf(bob), exactInputSellIn);
+            assertEq(alice.balance - aliceNativeBeforeSell, exactInputSellOut);
+            _assertLastRoute(bob, alice, productData, 3);
+        }
         vm.prank(bob);
-        (uint256 exactInputSellIn, uint256 exactInputSellOut) = router.swapExactInput(
-            false, uint128(exactInputBuyOut / 10), 1, bob, TickMath.MAX_SQRT_PRICE - 1, productData
-        );
-        assertEq(exactInputSellIn, exactInputBuyOut / 10);
-        assertGt(exactInputSellOut, 0);
+        token.approve(address(router), 0);
 
         vm.prank(alice);
-        uint256 exactOutputSellIn =
-            router.swapExactOutput(false, 0.01 ether, 0.1 ether, alice, TickMath.MAX_SQRT_PRICE - 1, productData);
-        assertGt(exactOutputSellIn, 0);
-        assertEq(hook.swapCount(), 4);
-        assertEq(hook.lastPayer(), alice);
-        assertEq(hook.lastRecipient(), alice);
-        assertEq(hook.lastProductDataHash(), keccak256(productData));
+        token.approve(address(router), 0.1 ether);
+        {
+            uint256 aliceTokenBeforeSell = token.balanceOf(alice);
+            uint256 bobNativeBeforeSell = bob.balance;
+            vm.prank(alice);
+            uint256 exactOutputSellIn =
+                router.swapExactOutput(false, 0.01 ether, 0.1 ether, bob, TickMath.MAX_SQRT_PRICE - 1, productData);
+            assertGt(exactOutputSellIn, 0);
+            assertEq(aliceTokenBeforeSell - token.balanceOf(alice), exactOutputSellIn);
+            assertEq(bob.balance - bobNativeBeforeSell, 0.01 ether);
+            _assertLastRoute(alice, bob, productData, 4);
+        }
+        vm.prank(alice);
+        token.approve(address(router), 0);
     }
 
     function test_forcedNativeIsNotRefundedToNextCallerAndCanOnlyReachBoundRecipient() public {
@@ -171,7 +193,15 @@ contract AuthenticatedNativeTokenRouterTest is BaseTest {
         bytes memory spoofed = abi.encode(router.ROUTE_DOMAIN(), alice, bob, bytes("spoofed"));
         vm.deal(alice, 1 ether);
         vm.prank(alice);
-        vm.expectRevert();
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                CustomRevert.WrappedError.selector,
+                address(hook),
+                IHooks.beforeSwap.selector,
+                abi.encodeWithSelector(IdentityHook.InvalidRoute.selector),
+                abi.encodePacked(Hooks.HookCallFailed.selector)
+            )
+        );
         poolSwapRouter.swap{value: 1 ether}(
             key,
             SwapParams({zeroForOne: true, amountSpecified: -1 ether, sqrtPriceLimitX96: TickMath.MIN_SQRT_PRICE + 1}),
@@ -200,5 +230,12 @@ contract AuthenticatedNativeTokenRouterTest is BaseTest {
         vm.expectRevert(AuthenticatedNativeTokenRouter.InvalidAmount.selector);
         router.swapExactOutput{value: 1 ether}(true, 0, 1 ether, alice, TickMath.MIN_SQRT_PRICE + 1, "");
         assertEq(hook.swapCount(), 0);
+    }
+
+    function _assertLastRoute(address payer, address recipient, bytes memory productData, uint256 count) private view {
+        assertEq(hook.swapCount(), count);
+        assertEq(hook.lastPayer(), payer);
+        assertEq(hook.lastRecipient(), recipient);
+        assertEq(hook.lastProductDataHash(), keccak256(productData));
     }
 }

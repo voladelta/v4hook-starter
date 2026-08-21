@@ -8,8 +8,10 @@ bun install --frozen-lockfile
 ```
 
 `devnet-check.sh` runs the complete lifecycle with cleanup traps and prints `DEVNET_OK` only after
-deployment, the scenario and shutdown all succeed. Use the individual commands when developing one
-stage; always run the wrapper before completion.
+deployment, the scenario and shutdown all succeed. It binds a unique ownership token before
+startup, so signals and readiness failures stop only the Anvil process it created. The full check
+also exercises those two cleanup paths. Use the individual commands when developing one stage;
+always run the wrapper before completion.
 
 `devnet-up.sh` starts Anvil with 100 funded accounts derived from a public test mnemonic and records
 its PID under `.devnet/`. Never fund or reuse these accounts on a public network.
