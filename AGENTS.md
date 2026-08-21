@@ -13,18 +13,19 @@ components so the finished repository describes one product.
   contract; an already-checkable request does not need another specification.
 - **Repository change:** apply `implement-repo-changes` as production-path hygiene, subordinate to
   this guide and any task contract.
-- **Fresh review:** after focused implementation is green, use `maintaining-llm-prs` for a
-  read-only review. Keep review, bounded repair, and independent verification distinct.
+- **Material review:** after focused proof is green, follow `docs/workflow.md` with
+  `maintaining-llm-prs` when a change alters architecture, APIs, invariants, security, persistence,
+  concurrency, or several product surfaces.
 
 This repository is standalone. Use its source and scripts directly; the legacy `v4hook-cli` is not
 part of this workflow.
 
 ## Route the task
 
-Read `README.md`, then open only the smallest owned surface that can answer the request. Read
-`foundry.toml` for Solidity build or test behavior and `remappings.txt` when tracing an import.
-Generated evidence lives in `out/`, `cache/`, `broadcast/`, `.devnet/`, and `reports/`; treat it as
-output rather than source.
+Open only the smallest owned surface that can answer the request. Read `README.md` for starter
+orientation or its copy workflow, `foundry.toml` for Solidity build or test behavior, and
+`remappings.txt` when tracing an import. Generated evidence lives in `out/`, `cache/`, `broadcast/`,
+`.devnet/`, and `reports/`; treat it as output rather than source.
 
 | Trigger | Read first | Disclose next |
 | --- | --- | --- |
@@ -58,24 +59,11 @@ source-reading targets.
 The routed document owns branch-specific requirements for swaps, tokens, VRF, tests, devnet, and
 testnet. Apply every requirement on each branch the product includes.
 
-## Prove the result
+## Verify
 
-Run the narrowest behavioral proof first. After it passes, run:
-
-```sh
-./scripts/check.sh
-```
-
-The full gate requires exit code zero and a final `CHECK_OK` after every enabled stage. Use Bun for
-the TypeScript workspace. `SKIP_APP=1 ./scripts/check.sh` is valid only when the task explicitly
-excludes the dapp and scenario layer.
-
-A complete interactive product also requires `./scripts/devnet-check.sh`, its final `DEVNET_OK`, a
-checked report, and cleanup. Replace the seed `scenarios/trade.ts` with the intended router path
-before treating devnet output as product evidence.
-
-Testnet work stops after the fork dry-run unless the user explicitly authorizes broadcast to the
-named network.
+Use `docs/testing.md` for focused and full local proof. An interactive product also completes the
+devnet gate in `docs/devnet.md`. Testnet preparation and its broadcast boundary live in
+`docs/testnet.md`.
 
 ## Authority
 
@@ -88,6 +76,5 @@ an existing Foundry keystore account.
 ## Completion
 
 Complete means the requested behavior exists through its production path, every applicable routed
-requirement is satisfied, focused and full gates are green, unused seed references are removed or
-classified, interactive products have devnet evidence, and remaining external actions are reported
-without being performed.
+requirement and gate is satisfied, unused seed references are removed or classified, interactive
+products have devnet evidence, and remaining external actions are reported without being performed.

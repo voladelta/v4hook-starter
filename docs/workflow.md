@@ -61,7 +61,8 @@ real-boundary proof and every consumer of its changed interface is synchronized.
 
 ## 4. Review and repair
 
-After focused implementation is green, use fresh read-only review:
+After focused implementation is green, use this stage when the material-review trigger in
+`AGENTS.md` fires or the task contract requires it:
 
 1. Give the reviewer the exact contract, candidate diff, and proof commands. Each finding must name
    a source anchor, violated requirement, impact, and reproducer or missing proof.
@@ -80,9 +81,8 @@ proof, and an independent verifier has checked the final candidate.
 
 ## 5. Run gates and classify
 
-Run `./scripts/check.sh` after focused tests pass. Accept it only with exit code zero and its final
-`CHECK_OK`. A complete product with router, wallet, scenario, or UI behavior also runs
-`./scripts/devnet-check.sh` and requires `DEVNET_OK`. Any source change after review requires fresh
+Complete the applicable local gate in `docs/testing.md`. A product with router, wallet, scenario, or
+UI behavior also completes `docs/devnet.md`. Any source change after material review requires fresh
 review and verification.
 
 Classify the result:

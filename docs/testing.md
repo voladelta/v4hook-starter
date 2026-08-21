@@ -53,9 +53,12 @@ class succeeds, conservation holds after each sequence, and unexpected failures 
 
 ## Run the gates
 
-Run the nearest focused proof during development, then `./scripts/check.sh`. A skipped required test
-or empty filter is a failure. Accept the full gate only when its process exits zero and prints the
-final `CHECK_OK`; earlier tool output does not prove later stages ran.
+Run the nearest focused proof during development, then `./scripts/check.sh`. Use Bun for the
+TypeScript workspace. `SKIP_APP=1 ./scripts/check.sh` is valid only when the task explicitly excludes
+the dapp and scenario layer.
+
+A skipped required test or empty filter is a failure. Accept the full gate only when its process
+exits zero and prints the final `CHECK_OK`; earlier tool output does not prove later stages ran.
 
 Gas feasibility precedes downstream expansion. For public work that scales with state or inputs,
 follow `docs/gas.md` and keep its maximum-bound production-path test in the ordinary suite.
