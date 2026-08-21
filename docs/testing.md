@@ -34,3 +34,7 @@ expected-failure counter without classifying the observed production revert.
 Run a focused test during development, then `./scripts/check.sh`. A skipped required test or an empty
 filter is a failure. Accept the full gate only when its process exits zero and prints `CHECK_OK`; a
 tool report followed by process termination is not evidence that later stages ran.
+
+Gas feasibility is an earlier architecture gate, not a final optimization pass. For public work that
+scales with state or inputs, follow `docs/gas.md` and keep the maximum-bound production-path test in
+the ordinary suite.

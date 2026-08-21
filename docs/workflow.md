@@ -15,6 +15,7 @@ Inspect the repository first, then write one compact `SPEC.md` containing only:
 - observable product behavior;
 - economic, custody, identity and authority invariants;
 - supported swap, token, NFT, randomness, dapp and deployment paths;
+- target-chain gas assumptions and a maximum-transaction budget for scalable public paths;
 - behavioral proof required for each material invariant;
 - explicit external gaps and the stopping boundary.
 
@@ -35,6 +36,11 @@ requirement → failing real-boundary proof → production change → focused gr
 Start with compiling interfaces and one real PoolManager interaction. Add the closest rollback or
 hostile case before expanding. Keep contracts, deployment script, manifest schema, scenario adapter
 and UI consumer synchronized when their interface changes.
+
+When a public call or deployment scales with entries, participants, lots, claims or storage writes,
+complete the early feasibility gate in `docs/gas.md` after its first correct slice. Downstream
+product work waits until the maximum supported bound fits the declared budget or the operation is
+bounded and resumable.
 
 ## Review and repair
 

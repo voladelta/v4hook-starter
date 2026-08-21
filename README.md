@@ -49,6 +49,9 @@ The baseline contains:
 Delete seed contracts and tests the product does not use. Keep contracts, deployment scripts,
 manifests, scenarios and UI consumers synchronized.
 
+For loops, cohorts, batches or storage-heavy public calls, complete the early architecture gate in
+`docs/gas.md` before expanding the product around that design.
+
 ## Devnet
 
 After the product agent implements `script/DevnetDeploy.s.sol` and `scenarios/trade.ts`:

@@ -27,6 +27,7 @@ Treat `out/`, `cache/`, `broadcast/`, `.devnet/`, and `reports/` as generated ev
 | Authenticated native/token swaps | `src/router/AuthenticatedNativeTokenRouter.sol` | its real-PoolManager integration test, then `docs/hook.md` |
 | ERC-20 or NFT companion | `src/tokens/`, pinned OpenZeppelin base | `docs/tokens.md` |
 | Real PoolManager tests or stateful handlers | `test/integration/`, `test/utils/v4hook-testkit/` | `docs/testing.md`, `test/utils/InvariantActionAccounting.sol` |
+| Loops, batches, cohorts or storage-heavy calls | the affected public method and its maximum bound | `docs/gas.md`, then Foundry gas tracking |
 | Chainlink randomness | `src/vrf/`, pinned Chainlink closure | `docs/vrf.md` |
 | Browser or Viem client | `ui/`, `deployments/` | `docs/dapp.md` |
 | One hundred local traders | `scripts/devnet-*`, `scenarios/` | `docs/devnet.md` |
@@ -67,6 +68,8 @@ Every implementation must:
 - test rollback and hostile paths through the real pinned PoolManager;
 - keep companion token/NFT authority, supply and recovery policy explicit;
 - keep VRF requests outside PoolManager callbacks and callbacks limited to terminal storage;
+- complete the gas-feasibility gate before expanding a user-callable path whose work grows with
+  entries or storage writes;
 - replace `scenarios/trade.ts` with the real intended router path before claiming devnet completion;
 - update `deployments/*.json` consumers whenever deployment addresses or ABIs change.
 

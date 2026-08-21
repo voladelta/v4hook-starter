@@ -59,3 +59,6 @@ references `type(Hook).creationCode` embeds that creation code and can exceed EI
 hook itself fits. Keep large CREATE2 launch code in a constructor-only factory or a separate
 deployer, while the long-lived router remains small. Re-run the exact launch rollback proof after
 changing this boundary.
+
+Callback, launch or lifecycle work that grows with participants or storage must also pass the
+maximum-transaction gate in `docs/gas.md`; contract size alone does not establish executability.
