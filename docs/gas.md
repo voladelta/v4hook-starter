@@ -45,6 +45,17 @@ Use `forge test --gas-report` or a focused gas snapshot to inspect regressions, 
 actual transaction boundary during deployment preparation. The local Foundry routing index is
 `references/foundry/README.md`; its gas snapshot is `references/foundry/gas-tracking.md`.
 
+## Measure the deployment graph
+
+When a factory or launcher embeds creation code, measure the long-lived deployer's runtime and
+initcode after the first complete atomic deployment slice. Run `forge build --sizes` and the focused
+launch test before building scripts, scenarios or UI around that graph.
+
+If the graph exceeds EIP-170 or EIP-3860, reshape it before expanding downstream. Constructor-only
+helper deployers remain narrowly authorized, preserve atomic rollback and reject direct outsider
+use. The deployment graph is feasible when every deployable artifact fits its size limit and the
+real launch path proves both success and full rollback.
+
 ## Keep the limits separate
 
 - **Transaction gas:** whether one call can execute under the target chain's cap.

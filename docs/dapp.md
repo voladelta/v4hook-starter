@@ -30,6 +30,17 @@ decoded contract failures into an actionable message while retaining diagnostic 
 Treat RPC reads as fallible: expose unavailable or stale state, bound receipt polling and retry
 idempotent reads through a deliberate fallback. A transaction hash is progress, not completion.
 
+## Prove the render
+
+After typecheck and production build, serve the configured application in a real browser at desktop
+and the minimum supported width. Confirm that the root mounted, inspect uncaught console errors,
+check horizontal overflow, follow the keyboard order and exercise at least one production read and
+simulated write. Static compilation is not browser proof.
+
+Render proof is complete when both viewports show the final interface, interactive controls remain
+reachable with visible focus, the console has no uncaught application error and the exercised
+action reaches its expected pre-signature state.
+
 `ui/` is deliberately small: wallet connection, manifest loading and status display. The product
 agent adds hook-specific reads and actions after contract interfaces stabilize. Keep private keys
 out of the browser and repository.

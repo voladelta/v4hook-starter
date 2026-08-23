@@ -15,6 +15,10 @@ The deploy wrapper copies the manifest to the ignored `ui/public/deployment.json
 that copy. `devnet-up.sh` uses 100 disposable accounts derived from a public test mnemonic. These
 accounts are localhost-only and must never hold public-network funds.
 
+Before deployment, create `.devnet/` and prove that the active Foundry profile can write the
+manifest path. A successful script without a persisted, parseable `.devnet/deployment.json` is a
+failed deployment stage.
+
 The runner preflights every call with `eth_call`, then submits with an explicit gas limit so
 concurrent estimation cannot race changing pool state. The default is `1,000,000` gas. Override it
 with `TRADER_GAS_LIMIT` or a prepared trade's `gas` only when the production action has an evidenced
@@ -32,6 +36,11 @@ Use individual scripts while developing one stage. Before completion, run the ow
 bun install --frozen-lockfile
 ./scripts/devnet-check.sh
 ```
+
+Treat a block- or time-gated transition as separate broadcasts: deploy and fund, return to shell
+orchestration, advance the localhost chain through RPC, then broadcast activation. A `vm.roll` or
+`vm.warp` inside one multi-transaction broadcast script changes simulation state but does not prove
+the mined ordering that the production transition requires.
 
 The wrapper binds its Anvil process with a unique ownership token and cleanup traps. A failed
 scenario transaction or report must preserve the stage, selector, value, gas limit, transaction
