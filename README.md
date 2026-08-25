@@ -6,7 +6,17 @@ small Viem frontend.
 
 ## Start a project
 
-Copy without the template repository's Git history:
+Create a sibling project automatically:
+
+```sh
+~/Codehub/v4hook-starter/scaffold.sh my-hook
+```
+
+The script copies the starter without its Git history or configured generated directories,
+initializes a new Git repository and creates the initial commit. It refuses to overwrite an
+existing destination.
+
+For a different directory layout, run the equivalent steps manually:
 
 ```sh
 rsync -a \
