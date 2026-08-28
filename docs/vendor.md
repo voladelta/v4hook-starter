@@ -17,6 +17,7 @@ Permit2 or Solmate only by following an exact transitive import.
 | `openzeppelin-contracts` | ERC-20, ERC-721 and audited utility/security bases | `contracts/token/`, then the exact imported utility | Companion token/NFT implementation |
 | `chainlink-evm` | Minimal VRF v2.5 wrapper consumer closure for native direct funding | `contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol`, `PROVENANCE.md` | Compiling direct-funding reference without a large dependency tree |
 | `forge-std` | Foundry test, script, cheatcode and invariant utilities | `src/Test.sol`, `src/Script.sol`, `src/StdInvariant.sol` | Local tests and deployment scripts |
+| `hookr-contracts` | Source-review manifest contract for Hookr external hooks | `integrations/hooks/schema.v2.json`, `scripts/lib/external-hook-standard.mjs`, `integrations/hooks/uniswap-policy.v1.json` | Offline preflight for the pinned Hookr PR 3 integration surface |
 | `permit2` | Permit2 interfaces and implementation used by v4 periphery | follow the exact import from `v4-periphery` | Transitive PositionManager/router approval dependency |
 | `solmate` | Lightweight token and utility contracts used transitively by pinned Uniswap code | follow the exact import from `v4-core`, `v4-periphery` or a fixture | Transitive compile/test dependency |
 
@@ -33,6 +34,9 @@ Update only when the task requires it. Change the dependency, `vendor.lock.json`
 provenance, affected imports, and proofs as one reviewed slice. Inspect the vendored diff for
 unexpected files, then run formatting, build, real PoolManager integration tests, and the full gate.
 Keep independent upgrades in separate changes.
+
+The Hookr tree is pinned to an open pull-request revision. Treat schema or validator changes as an
+integration-contract change. The tree does not supply the unpublished V6.1 Solidity runtime or ABI.
 
 An update is complete when provenance names an immutable revision, every consumer compiles against
 the new tree, real-boundary behavior is green, and the diff contains only the intended dependency

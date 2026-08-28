@@ -24,6 +24,7 @@ For a different directory layout, run the equivalent steps manually:
 rsync -a \
   --exclude='.git' --exclude='node_modules' --exclude='out' --exclude='cache' \
   --exclude='broadcast' --exclude='.devnet' --exclude='reports' --exclude='ui/dist' \
+  --exclude='SPEC.md' --exclude='docs/hookr.md' --exclude='integrations/hookr' \
   /path/to/v4hook-starter/ /path/to/my-hook/
 cd /path/to/my-hook
 git init
@@ -56,7 +57,12 @@ The baseline contains:
 - `scripts/`: local checks, devnet lifecycle and testnet boundaries;
 - `scenarios/`: 100-wallet Viem runner with a hook-specific trade adapter;
 - `ui/`: minimal Viem browser client consuming a deployment manifest;
-- `vendor/`: one pinned Solidity dependency lane with provenance.
+- `vendor/`: pinned Solidity and integration dependency artifacts with provenance;
+- optional Hookr external-hook V2 preflight tools and pinned schema metadata.
+
+The scaffold omits `SPEC.md`, `docs/hookr.md`, and `integrations/hookr/`. These files identify this
+repository and its source commit. Add a new manifest only after the copied project has its own public
+repository and immutable source commit.
 
 Delete seed contracts and tests the product does not use. Keep contracts, deployment scripts,
 manifests, scenarios and UI consumers synchronized.
