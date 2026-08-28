@@ -143,6 +143,44 @@ contract StarterHookIntegrationTest is BaseTest {
         assertEq(uint160(address(hook)) & uint160((1 << 14) - 1), expectedFlags);
     }
 
+    function test_hookPermissionsMatchHookrManifest() public view {
+        string memory manifestPath = "integrations/hookr/manifest.json";
+        if (!vm.exists(manifestPath)) return;
+
+        string memory manifest = vm.readFile(manifestPath);
+        Hooks.Permissions memory permissions = hook.getHookPermissions();
+        string memory root = ".uniswapClassification.flags.";
+
+        assertEq(permissions.beforeInitialize, vm.parseJsonBool(manifest, string.concat(root, "beforeInitialize")));
+        assertEq(permissions.afterInitialize, vm.parseJsonBool(manifest, string.concat(root, "afterInitialize")));
+        assertEq(permissions.beforeAddLiquidity, vm.parseJsonBool(manifest, string.concat(root, "beforeAddLiquidity")));
+        assertEq(permissions.afterAddLiquidity, vm.parseJsonBool(manifest, string.concat(root, "afterAddLiquidity")));
+        assertEq(
+            permissions.beforeRemoveLiquidity, vm.parseJsonBool(manifest, string.concat(root, "beforeRemoveLiquidity"))
+        );
+        assertEq(
+            permissions.afterRemoveLiquidity, vm.parseJsonBool(manifest, string.concat(root, "afterRemoveLiquidity"))
+        );
+        assertEq(permissions.beforeSwap, vm.parseJsonBool(manifest, string.concat(root, "beforeSwap")));
+        assertEq(permissions.afterSwap, vm.parseJsonBool(manifest, string.concat(root, "afterSwap")));
+        assertEq(permissions.beforeDonate, vm.parseJsonBool(manifest, string.concat(root, "beforeDonate")));
+        assertEq(permissions.afterDonate, vm.parseJsonBool(manifest, string.concat(root, "afterDonate")));
+        assertEq(
+            permissions.beforeSwapReturnDelta, vm.parseJsonBool(manifest, string.concat(root, "beforeSwapReturnsDelta"))
+        );
+        assertEq(
+            permissions.afterSwapReturnDelta, vm.parseJsonBool(manifest, string.concat(root, "afterSwapReturnsDelta"))
+        );
+        assertEq(
+            permissions.afterAddLiquidityReturnDelta,
+            vm.parseJsonBool(manifest, string.concat(root, "afterAddLiquidityReturnsDelta"))
+        );
+        assertEq(
+            permissions.afterRemoveLiquidityReturnDelta,
+            vm.parseJsonBool(manifest, string.concat(root, "afterRemoveLiquidityReturnsDelta"))
+        );
+    }
+
     function test_directSwapCallbackReverts() public {
         vm.expectRevert(ImmutableState.NotPoolManager.selector);
         hook.beforeSwap(

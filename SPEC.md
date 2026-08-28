@@ -2,8 +2,8 @@
 
 ## Destination
 
-The repository publishes a source-only Hookr external-hook V2 manifest for `StarterHook` and proves
-that the declared callback and routing behavior runs through the real pinned PoolManager.
+The repository provides a source-only Hookr external-hook V2 manifest draft for `StarterHook` and
+proves that the declared callback and routing behavior runs through the real pinned PoolManager.
 
 ## Anchors
 
@@ -14,7 +14,7 @@ that the declared callback and routing behavior runs through the real pinned Poo
 
 ## Deliverables
 
-- A pinned, locally validated `hookr.external-hook.v2` source manifest.
+- A pinned, locally checked `hookr.external-hook.v2` source manifest draft.
 - Real-PoolManager proof for all four swap quadrants, final test-wallet settlement, permission bits,
   arbitrary hook data, and direct-callback rejection.
 - Dependency provenance and user-facing documentation for the Hookr source-review boundary.
@@ -30,11 +30,13 @@ that the declared callback and routing behavior runs through the real pinned Poo
 
 ## Proof
 
-- The vendored Hookr schema validates the manifest, and Hookr's pinned semantic validator accepts it.
-- Focused Foundry integration tests exercise the production hook through the real PoolManager.
+- A dependency-free preflight checks this draft against the vendored schema rules, and Hookr's pinned
+  semantic validator accepts it. This preflight is not a substitute for Hookr's upstream AJV gate.
+- Focused Foundry integration tests exercise the repository hook through the real PoolManager.
 - `./scripts/check.sh` ends with `CHECK_OK`.
 
 ## Gate
 
 This exploration is complete when the source-review artifact and local proof are green and the
-unpublished V6.1 ABI, deployment, and external submission steps are reported as explicit blockers.
+unpublished V6.1 ABI, deployment, upstream AJV gate, and external submission steps are reported as
+explicit blockers.

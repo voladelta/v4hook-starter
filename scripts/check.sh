@@ -27,6 +27,16 @@ run_step() {
 run_step "forge format" forge fmt --check
 run_step "forge build and sizes" forge build --sizes
 run_step "forge tests" forge test
+hookr_manifest=integrations/hookr/manifest.json
+if [ -f "$hookr_manifest" ]; then
+    run_step "Hookr manifest local preflight" node scripts/validate-hookr-manifest.mjs "$hookr_manifest"
+    run_step "Hookr manifest validator tests" env HOOKR_MANIFEST="$hookr_manifest" node --test scripts/validate-hookr-manifest.test.mjs
+elif [ -f docs/hookr.md ] || [ -d integrations/hookr ]; then
+    echo "Hookr integration files exist but integrations/hookr/manifest.json is missing" >&2
+    exit 1
+else
+    echo "Hookr manifest: skipped (add a project-specific integrations/hookr/manifest.json to enable)"
+fi
 run_step "devnet startup cleanup" "$root/scripts/test-devnet-startup-cleanup.sh"
 
 if command -v slither >/dev/null 2>&1; then

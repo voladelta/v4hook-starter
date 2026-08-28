@@ -41,6 +41,9 @@ rsync -a \
     --exclude='.devnet' \
     --exclude='reports' \
     --exclude='ui/dist' \
+    --exclude='SPEC.md' \
+    --exclude='docs/hookr.md' \
+    --exclude='integrations/hookr' \
     "$starter_root/" \
     "$target/"
 

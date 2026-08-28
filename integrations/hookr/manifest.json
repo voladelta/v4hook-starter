@@ -1,0 +1,229 @@
+{
+  "$schema": "https://hookr.fun/schemas/external-hook.v2.json",
+  "schemaVersion": "hookr.external-hook.v2",
+  "slug": "v4hook-starter",
+  "name": "V4Hook Starter",
+  "summary": "A multi-pool Uniswap v4 reference hook that records swap and liquidity callback counts without changing swap deltas, fees, access, or settlement.",
+  "status": "source-only",
+  "integrationMode": "standalone-hook-product",
+  "author": {
+    "github": "voladelta"
+  },
+  "source": {
+    "repository": "https://github.com/voladelta/v4hook-starter",
+    "pinnedCommit": "e3b950f4214514a016d4eda2f872606d214d7a98",
+    "license": "MIT",
+    "hookContract": "src/StarterHook.sol",
+    "contracts": [
+      "src/StarterHook.sol"
+    ]
+  },
+  "provenance": {
+    "deploymentModel": "singleton",
+    "factoryContract": null,
+    "factoryInterface": "none",
+    "allowlistedFactoryInterface": false,
+    "creationCodeHashEvidence": "source-derived",
+    "runtimeCodeHashEvidence": "absent",
+    "constructorArgsEvidence": "source-documented",
+    "saltDerivationEvidence": "source-documented",
+    "proxyModel": "non-proxy",
+    "mutableAuthorityReview": "reviewed-none",
+    "operatorDependencyReview": "reviewed-none"
+  },
+  "integration": {
+    "poolScope": "multi-pool",
+    "supportedTracks": [
+      "hook_publication"
+    ],
+    "standardSwapBehavior": "Ordinary swaps can use empty or non-empty hook data. The hook records one beforeSwap and one afterSwap count for the PoolId, returns zero deltas and no fee override, and does not read router or user identity.",
+    "dedicatedRouter": {
+      "requiredForAllSwaps": false,
+      "contract": "Not applicable",
+      "purpose": "The hook does not attribute payer, recipient, or beneficiary identity and does not require a product-specific settlement path."
+    },
+    "routingCompatibility": {
+      "hookData": {
+        "mode": "arbitrary",
+        "version": null,
+        "maxBytes": null,
+        "trustedFields": [],
+        "emptyDataBehavior": "Empty hook data is accepted. Non-empty hook data is also accepted and ignored."
+      },
+      "swapMatrix": {
+        "exactInputZeroForOne": {
+          "status": "untested",
+          "routers": []
+        },
+        "exactInputOneForZero": {
+          "status": "untested",
+          "routers": []
+        },
+        "exactOutputZeroForOne": {
+          "status": "untested",
+          "routers": []
+        },
+        "exactOutputOneForZero": {
+          "status": "untested",
+          "routers": []
+        }
+      },
+      "officialUniversalRouter": {
+        "status": "untested",
+        "requiredAddressIdentity": true,
+        "notes": "The callbacks do not require custom data, but no exact deployed Universal Router address, runtime, fork matrix, or wallet readback is supplied."
+      },
+      "multihop": {
+        "status": "untested",
+        "notes": "The source does not restrict multihop settlement, but no exact router and route evidence is supplied."
+      },
+      "quoteDiscovery": {
+        "mode": "none",
+        "alfCompatibility": "unsupported",
+        "simulationActorBinding": "not-applicable",
+        "notes": "The hook does not implement a quote interface and does not claim ALF compatibility."
+      },
+      "finalAmountEvidence": {
+        "poolManagerSwapBasis": "pre-after-swap-return-delta",
+        "canonicalRouterEvent": null,
+        "genericRouterFinalSettlement": "untested",
+        "notes": "Local branch tests reconcile PoolSwapTest return deltas with final test-wallet balances in all four quadrants. The manifest remains untested until that proof has a public immutable URL."
+      }
+    },
+    "dependencies": [
+      {
+        "name": "Uniswap v4 PoolManager",
+        "kind": "protocol",
+        "required": true
+      },
+      {
+        "name": "Uniswap v4-periphery BaseHook",
+        "kind": "other",
+        "required": true
+      }
+    ]
+  },
+  "uniswapClassification": {
+    "flags": {
+      "beforeInitialize": false,
+      "afterInitialize": false,
+      "beforeAddLiquidity": true,
+      "afterAddLiquidity": false,
+      "beforeRemoveLiquidity": true,
+      "afterRemoveLiquidity": false,
+      "beforeSwap": true,
+      "afterSwap": true,
+      "beforeDonate": false,
+      "afterDonate": false,
+      "beforeSwapReturnsDelta": false,
+      "afterSwapReturnsDelta": false,
+      "afterAddLiquidityReturnsDelta": false,
+      "afterRemoveLiquidityReturnsDelta": false
+    },
+    "properties": {
+      "dynamicFee": false,
+      "upgradeable": false,
+      "requiresCustomSwapData": false,
+      "customDataMode": "none",
+      "vanillaSwap": true,
+      "swapAccess": "none"
+    },
+    "callbackSemantics": [
+      {
+        "name": "beforeAddLiquidity",
+        "callerAuthorization": "none",
+        "stateScope": "pool-id",
+        "hookData": {
+          "schema": "other",
+          "maxBytes": null,
+          "trustedFields": []
+        },
+        "returnShape": "selector-only",
+        "deltaUnits": "none",
+        "failureMode": "fail-closed",
+        "externalCalls": false,
+        "reentrancyBoundary": "Pinned BaseHook restricts the external callback to the immutable PoolManager. The implementation performs one PoolId-scoped counter increment and no external call.",
+        "gasBoundary": "One storage counter increment, no loop, and no external call. No target-chain callback gas measurement is claimed."
+      },
+      {
+        "name": "beforeRemoveLiquidity",
+        "callerAuthorization": "none",
+        "stateScope": "pool-id",
+        "hookData": {
+          "schema": "other",
+          "maxBytes": null,
+          "trustedFields": []
+        },
+        "returnShape": "selector-only",
+        "deltaUnits": "none",
+        "failureMode": "fail-closed",
+        "externalCalls": false,
+        "reentrancyBoundary": "Pinned BaseHook restricts the external callback to the immutable PoolManager. The implementation performs one PoolId-scoped counter increment and no external call.",
+        "gasBoundary": "One storage counter increment, no loop, and no external call. No target-chain callback gas measurement is claimed."
+      },
+      {
+        "name": "beforeSwap",
+        "callerAuthorization": "none",
+        "stateScope": "pool-id",
+        "hookData": {
+          "schema": "other",
+          "maxBytes": null,
+          "trustedFields": []
+        },
+        "returnShape": "selector-only",
+        "deltaUnits": "none",
+        "failureMode": "fail-closed",
+        "externalCalls": false,
+        "reentrancyBoundary": "Pinned BaseHook restricts the external callback to the immutable PoolManager. The implementation ignores sender and hook data, increments one counter, and returns a zero delta.",
+        "gasBoundary": "One storage counter increment, no loop, and no external call. No target-chain callback gas measurement is claimed."
+      },
+      {
+        "name": "afterSwap",
+        "callerAuthorization": "none",
+        "stateScope": "pool-id",
+        "hookData": {
+          "schema": "other",
+          "maxBytes": null,
+          "trustedFields": []
+        },
+        "returnShape": "selector-only",
+        "deltaUnits": "none",
+        "failureMode": "fail-closed",
+        "externalCalls": false,
+        "reentrancyBoundary": "Pinned BaseHook restricts the external callback to the immutable PoolManager. The implementation ignores sender and hook data, increments one counter, and returns a zero delta.",
+        "gasBoundary": "One storage counter increment, no loop, and no external call. No target-chain callback gas measurement is claimed."
+      }
+    ]
+  },
+  "security": {
+    "auditStatus": "unaudited",
+    "auditUrls": [],
+    "authorityModel": "The hook has no owner, administrator, upgrade path, or external operator. Its only immutable runtime binding is the PoolManager supplied to the constructor.",
+    "immutableDependencies": true,
+    "knownRisks": [
+      "The repository is an unaudited starter and is not approved for real-value deployment.",
+      "Every enabled callback writes storage, so a constrained caller can fail closed on callback gas.",
+      "Any pool and any PoolManager sender can use the hook; the hook does not authenticate routers or user identity."
+    ],
+    "frameworkAssessment": {
+      "frameworkUrl": "https://developers.uniswap.org/docs/protocols/v4/security",
+      "assessedAt": null,
+      "scoreStatus": "unscored",
+      "score": null,
+      "featureTriggers": [
+        "other"
+      ],
+      "requiredActions": [
+        "stateful-fuzz",
+        "fork-tests",
+        "monitoring",
+        "bug-bounty",
+        "incident-procedure"
+      ],
+      "monitoringStatus": "not-planned",
+      "bugBountyStatus": "not-planned",
+      "incidentResponseStatus": "not-planned"
+    }
+  },
+  "deployments": []
+}
