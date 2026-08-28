@@ -1,3 +1,5 @@
+![V4Hook Starter banner](docs/assets/v4hook-starter-banner.png)
+
 # v4hook starter
 
 An opinionated, copyable Uniswap v4 product starter: hook, optional ERC-20/ERC-721 companions,
