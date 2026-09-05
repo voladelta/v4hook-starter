@@ -16,6 +16,8 @@ out/
 .env.*
 !.env.example
 
+.DS_Store
+
 # Node modules
 node_modules/
 ui/dist/
