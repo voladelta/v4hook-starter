@@ -30,7 +30,9 @@ verifier's product-specific postconditions.
 
 ## Run and diagnose
 
-Use individual scripts while developing one stage. Before completion, run the owned lifecycle:
+Use individual scripts while developing one stage. Before completing an interactive product build
+or a change to its devnet path, run the owned lifecycle. If dependencies are missing, obtain explicit
+installation authority before the install step; reuse authority already given in the task:
 
 ```sh
 bun install --frozen-lockfile
@@ -48,5 +50,6 @@ hash, gas used, and post-receipt replay error when available in `reports/`.
 
 The lifecycle is complete only when all intended transactions mine successfully, the checked report
 proves product postconditions, `DEVNET_OK` is printed after shutdown, no listener owned by the
-lifecycle remains, and the tracked tree is clean. Preserve `.devnet/deployment.json` and `reports/`
-as ignored evidence.
+lifecycle remains, and the lifecycle leaves no unintended tracked changes. Compare against the
+pre-run diff; preserve intended source edits and unrelated user changes. Preserve
+`.devnet/deployment.json` and `reports/` as ignored evidence.

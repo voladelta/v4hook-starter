@@ -1,24 +1,39 @@
 # Agent guide
 
-Deliver the requested hook as a vertical product through every surface it needs: contracts, real
+For hook builds, deliver the requested product through every surface it needs: contracts, real
 PoolManager proof, deployment, devnet interaction, and dapp integration. Remove unused seed
-components so the finished repository describes one product.
+components so the finished repository describes one product. Keep focused requests within their
+requested scope.
+
+## Work within the task
+
+Treat a request to build or fix as authority to do the work within the Authority section below.
+Resolve routine choices from the request and source. Continue until the requested result and its
+required checks are complete. Ask only when missing input changes the result or authorized scope;
+continue independent work while waiting.
+
+User instructions take precedence over skill guidance, subject to system and developer rules.
+Do not infer an approval step from a skill default. If an instruction blocks work, name and link
+to its file, quote the rule, and state the input or authority needed to proceed.
+
+Use literal language and ASD-STE100 Simplified Technical English. State the main point early.
+Use short paragraphs, simple words, and active verbs. Use lists for steps or comparisons. Report
+what changed, what was checked, and any remaining gap. Avoid stock phrases and repeated summaries.
 
 ## Choose the workflow
 
 - **Focused edit:** inspect the owning surface, make the smallest coherent change, and run its
   nearest proof.
-- **Multi-surface build:** read the installed `workflow-convergence` skill, then
-  `docs/workflow.md`. Let that skill decide whether the request needs one compact `task-contracts`
-  contract; an already-checkable request does not need another specification.
-- **Repository change:** apply `implement-repo-changes` as production-path hygiene, subordinate to
-  this guide and any task contract.
-- **Material review:** after focused proof is green, follow `docs/workflow.md` with
-  `maintaining-llm-prs` when a change alters architecture, APIs, invariants, security, persistence,
+- **Multi-surface build:** follow `docs/workflow.md`. Use one compact task contract when needed;
+  an already-checkable request does not need another specification.
+- **Repository change:** trace the affected behavior through its implementation and consumers.
+  Make the smallest coherent change, preserve unrelated work, and use `docs/testing.md` to check
+  the result. Inspect the final diff for unintended changes.
+- **Material review:** after focused proof is green, follow the review and repair stage in
+  `docs/workflow.md` when a change alters architecture, APIs, invariants, security, persistence,
   concurrency, or several product surfaces.
 
-This repository is standalone. Use its source and scripts directly; the legacy `v4hook-cli` is not
-part of this workflow.
+Use this repository's source, scripts, and documentation directly.
 
 ## Route the task
 
@@ -61,21 +76,28 @@ testnet. Apply every requirement on each branch the product includes.
 
 ## Verify
 
-Use `docs/testing.md` for focused and full local proof. An interactive product also completes the
-devnet gate in `docs/devnet.md`. Testnet preparation and its broadcast boundary live in
-`docs/testnet.md`.
+Use `docs/testing.md` to select checks for the changed surface. An interactive product build also
+completes the devnet gate in `docs/devnet.md`. Testnet preparation and its broadcast boundary live
+in `docs/testnet.md`.
 
 ## Authority
 
 Build requests authorize local source edits, tests, generated local manifests, and disposable
-localhost processes. Signing, wallet access, paid services, public-network broadcast, verification
-publication, dependency installation, and external repository writes require explicit user
+localhost processes, including transactions from the disposable devnet accounts in `docs/devnet.md`.
+Signing outside that localhost fixture, wallet access, paid services, public-network broadcast,
+verification publication, dependency installation, and external repository writes require explicit user
 authority. Keep secrets out of commands, output, files, and prompts; a user-run broadcast may name
 an existing Foundry keystore account.
 
+Reuse explicit authority already given for the same action and scope. Complete authorized local
+preparation before asking for any remaining external authority. Preserve unrelated user changes.
+
 ## Completion
 
-Complete means the requested artifact owns the required behavior, the real consumer uses that
-artifact, and focused proof is causally dependent on it. Every applicable routed requirement and
+For documentation edits, complete means the instructions are consistent, referenced paths resolve,
+and the diff stays within scope. Report static review separately from runtime evidence.
+
+For product changes, complete means the requested artifact owns the required behavior, the real
+consumer uses that artifact, and focused proof is causally dependent on it. Every applicable routed requirement and
 gate is satisfied, unused seed references are removed or classified, interactive products have
 devnet evidence, and remaining external actions are reported without being performed.

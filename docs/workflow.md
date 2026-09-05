@@ -3,6 +3,17 @@
 Use this sequence for a complete hook, a material adaptation, or any request spanning dependent
 surfaces. A focused edit uses `inspect → implement → check` without creating workflow artifacts.
 
+## Continue and delegate work
+
+Treat a new user message as a correction or addition to the active task unless it cancels or
+replaces that task. Answer status questions briefly, then continue. After a context reset, resume
+from recorded evidence and inspect any changed state before repeating work.
+
+Keep focused edits with one agent. For a build, delegate a bounded read-only investigation when it
+can run beside useful implementation work. Give each agent its scope, required evidence, and return
+condition. Wait for results before work that depends on them. The independent review below remains
+required when its trigger applies. Use clear, spaced sentences in messages between agents.
+
 ## 1. Establish the ledger
 
 Inspect current Git state and focused failures. For a multi-step build, keep one ignored

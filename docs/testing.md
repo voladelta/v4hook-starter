@@ -14,11 +14,14 @@ reuses production math cannot prove the requested artifact.
 `test/utils/v4hook-testkit/` deploys the real pinned v4 bytecode locally. Read `PROVENANCE.md` before
 changing the fixture, and treat files under its `artifacts/` directory as opaque bytecode.
 
-Prove causality for each requested production behavior: make a reversible perturbation to its
+For changed production behavior, first use a focused test that detects the named defect. When it
+is unclear whether that test depends on the production owner, make a reversible perturbation to its
 implementation in the requested artifact while preserving the consumer-facing interface. Run the
 focused proof through the real consumer; it must go red on the expected behavioral assertion, then
 green after the original implementation is restored. If it stays green, trace the consumer path and
 repair the proof or remove the bypass before completion.
+Run perturbations in an isolated test workspace, restore the original source, and verify restoration.
+Do not add tests that only repeat the implementation or perturb code for documentation-only edits.
 
 ## Prove swap accounting
 
@@ -56,8 +59,12 @@ class succeeds, conservation holds after each sequence, and unexpected failures 
 
 ## Run the gates
 
-Run the nearest focused proof during development, then `./scripts/check.sh`. Use Bun for the
-TypeScript workspace. `SKIP_APP=1 ./scripts/check.sh` is valid only when the task explicitly excludes
+For documentation-only edits, check the diff, referenced paths, and instruction consistency. Walk
+through a routine request and a relevant authority or failure case. Report this as static review;
+it does not prove model behavior. Run code checks if an edit changes an executable example or command.
+
+For code changes, run the nearest focused proof during development, then `./scripts/check.sh`. Use
+Bun for the TypeScript workspace. `SKIP_APP=1 ./scripts/check.sh` is valid only when the task explicitly excludes
 the dapp and scenario layer.
 
 A skipped required test or empty filter is a failure. Accept the full gate only when its process
@@ -68,3 +75,5 @@ follow `docs/gas.md` and keep its maximum-bound production-path test in the ordi
 
 Verification is complete when focused proof and every applicable full-gate stage are green, the
 sentinel is present, and the final source has not changed since those commands ran.
+Reuse passing results for unchanged inputs. Repeat or broaden checks only after a relevant edit,
+failure, or unresolved concern. Documentation-only edits complete with the static checks above.
