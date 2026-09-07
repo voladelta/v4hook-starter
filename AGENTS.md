@@ -50,6 +50,7 @@ orientation or its copy workflow, `foundry.toml` for Solidity build or test beha
 | PoolManager, fuzz, or invariant proof | `test/integration/` or the affected test | `docs/testing.md` |
 | Loops, batches, cohorts, or storage growth | the public entry point and its maximum bound | `docs/gas.md` |
 | Chainlink randomness | `src/vrf/` and the exact pinned Chainlink base | `docs/vrf.md` |
+| Robinhood Chain randomness or Dice Protocol | `docs/vrf.md` for the Dice alternative to Chainlink VRF | the linked Dice references |
 | Browser or Viem behavior | `ui/` and `deployments/` | `docs/dapp.md` |
 | One hundred local traders | `scenarios/` and `scripts/devnet-*` | `docs/devnet.md` |
 | Testnet preparation or deployment | `script/` and `scripts/testnet-*` | `docs/testnet.md` |
